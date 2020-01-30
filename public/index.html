@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>File Transfer</title>
+  </head>
+  <body>
+    <section id="tab__file">
+      <form action="/share" id="file-uploader" method="post">
+        <input type="file" id="file" name="file" />
+        <input type="submit" value="Share" />
+      </form>
+      <section id="file-list"></section>
+    </section>
+    <script>
+      const form = document.getElementById("file-uploader");
+      const fileInput = document.getElementById("file");
+      const fileSection = document.getElementById("file-list");
+      const fileWatcherTimeout = 1000;
+
+      form.onsubmit = e => {
+        e.preventDefault();
+        let fd = new FormData(form);
+        let request = new XMLHttpRequest();
+        request.open("POST", "/upload");
+        request.send(fd);
+        fileInput.value = "";
+      };
+
+      // watch files
+      let files = [];
+
+      const getFiles = async () => {
+        let files = await fetch("/shared");
+        return files.json();
+      };
+
+      const updateDOM = () => {
+        fileSection.innerHTML = "";
+        files.forEach(
+          file =>
+            (fileSection.innerHTML += `<a href="/shared/${file}">${file}</a>\n`)
+        );
+      };
+
+      setInterval(async () => {
+        let loadedFiles = await getFiles();
+        if (!loadedFiles.list.compare(files)) {
+          files = loadedFiles.list;
+          updateDOM();
+          // updateText();
+        }
+      }, fileWatcherTimeout);
+
+
+
+      // Helpers
+      Array.prototype.compare = function(array) {
+        if (!array) {
+          return false;
+        }
+        if (this.length !== array.length) {
+          return false;
+        }
+        for (var i = 0, l = this.length; i < l; i++) {
+          if (this[i] instanceof Array && array[i] instanceof Array) {
+            if (!this[i].compare(array[i])) {
+              return false;
+            }
+          } else if (this[i] !== array[i]) {
+            return false;
+          }
+        }
+        return true;
+      };
+    </script>
+
+    <style>
+      body {
+        margin: 0;
+      }
+      #tab__file,
+      #tab__code {
+        width: 100vw;
+        height: 100vh;
+      }
+      #tab__file {
+          background: #eee;
+      }
+      #file-list a {
+        display: block;
+      }
+    </style>
+  </body>
+</html>
