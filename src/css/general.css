@@ -1,0 +1,18 @@
+.highlighted {
+    background: #fefd04;
+    border-radius: 7px;
+    padding: 5px 2px;
+}
+.panel-block-name {
+    max-width: calc(100% - 150px);
+}
+.panel-block-size {
+    position: absolute;
+    right: 10px;
+    border-left: 1px solid #ededed;
+    padding-left: 10px;
+    width: 120px;
+}
+.upload-button {
+    margin-top: 5px;
+}

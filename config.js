@@ -1,0 +1,1 @@
+global SHARED_FOLDER = 5;
